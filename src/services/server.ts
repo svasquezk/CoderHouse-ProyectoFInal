@@ -4,6 +4,7 @@ import path from 'path';
 import * as http from 'http';
 import apiRouter from '../routers/index';
 import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 
@@ -11,9 +12,12 @@ const publicFolderPath = path.resolve(__dirname, '../../public');
 app.use(express.static(publicFolderPath));
 app.use(express.json());
 
-const timeSession = 60000; // 1 minuto
+const timeSession = 60000 * 10; // 1 minuto
+
+// Persistencia de Session
 app.use(
     session({
+        store: MongoStore.create({mongoUrl: 'mongodb://127.0.0.1:27017/sesiones'}),
         secret: 'mysecretcontent',
         cookie: { maxAge: timeSession },
         saveUninitialized: true,
